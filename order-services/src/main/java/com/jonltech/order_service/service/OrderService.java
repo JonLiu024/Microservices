@@ -1,0 +1,81 @@
+package com.jonltech.order_service.service;
+
+import com.jonltech.order_service.dto.InventoryResponse;
+import com.jonltech.order_service.dto.OrderLineItemsDto;
+import com.jonltech.order_service.dto.OrderRequest;
+import com.jonltech.order_service.model.Order;
+import com.jonltech.order_service.model.OrderLineItems;
+import com.jonltech.order_service.repository.OrderRepository;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Data
+@RequiredArgsConstructor
+@Builder
+@Service
+public class OrderService {
+
+    public final OrderRepository orderRepository;
+    public final WebClient webClient;
+
+    public void placeOrder(OrderRequest orderRequest) {
+        Order order = new Order();
+        order.setOrderNumber(UUID.randomUUID().toString());
+
+        List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
+                .stream().map(this::mapDtoToPojo).collect(Collectors.toList());
+        order.setOrderLineItemsList(orderLineItemsList);
+
+        List<String> skuCodes = orderLineItemsList.stream()
+                .map(OrderLineItems::getSkuCode).collect(Collectors.toList());
+
+
+        //make request to the inventory service to check if orderlineitems are in stock
+        //uriBuilder.queryparam creates the uri in the form localhost:8082/api/inventory?skuCode=..&skuCode2=...
+        //-> localhost:8082/api/inventory?skuCode={skuCode1}.. and localhost:8082/api/inventory?skuCode={skuCode}....
+        InventoryResponse[] inventoryResponses = webClient.get()
+                .uri(uriBuilder -> {
+                    UriBuilder builder = uriBuilder.path("http://localhost:8082/api/inventory");
+                    for (String skuCode : skuCodes) {
+                        builder.queryParam("skuCode", skuCode);
+                    }
+
+                    return builder.build();
+                })
+                .retrieve()
+                .bodyToMono(InventoryResponse[].class)
+                .block();
+
+
+        boolean allProductsInstock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
+
+        if (allProductsInstock) {
+            orderRepository.save(order);
+        } else {
+            throw new IllegalArgumentException("The product ordered is not in stock");
+        }
+
+
+    }
+
+    public OrderLineItems mapDtoToPojo(OrderLineItemsDto orderLineItemsDto) {
+        OrderLineItems orderLineItems = new OrderLineItems();
+        orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
+        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
+        orderLineItems.setPrice(orderLineItemsDto.getPrice());
+        return orderLineItems;
+
+    }
+
+
+
+}

@@ -1,0 +1,10 @@
+com/jonltech/product_services/controller/ProductController.class
+com/jonltech/product_services/dto/ProductRequest$ProductRequestBuilder.class
+com/jonltech/product_services/service/ProductService.class
+com/jonltech/product_services/dto/ProductResponse$ProductResponseBuilder.class
+com/jonltech/product_services/ProductServicesApplication.class
+com/jonltech/product_services/repository/ProductRepository.class
+com/jonltech/product_services/dto/ProductResponse.class
+com/jonltech/product_services/dto/ProductRequest.class
+com/jonltech/product_services/model/Product$ProductBuilder.class
+com/jonltech/product_services/model/Product.class
