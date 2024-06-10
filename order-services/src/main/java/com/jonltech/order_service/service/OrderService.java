@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,22 +34,18 @@ public class OrderService {
                 .stream().map(this::mapDtoToPojo).collect(Collectors.toList());
         order.setOrderLineItemsList(orderLineItemsList);
 
-        List<String> skuCodes = orderLineItemsList.stream()
+        List<String> skuCodes = order.getOrderLineItemsList().stream()
                 .map(OrderLineItems::getSkuCode).collect(Collectors.toList());
 
 
         //make request to the inventory service to check if orderlineitems are in stock
         //uriBuilder.queryparam creates the uri in the form localhost:8082/api/inventory?skuCode=..&skuCode2=...
         //-> localhost:8082/api/inventory?skuCode={skuCode1}.. and localhost:8082/api/inventory?skuCode={skuCode}....
-        InventoryResponse[] inventoryResponses = webClient.get()
-                .uri(uriBuilder -> {
-                    UriBuilder builder = uriBuilder.path("http://localhost:8082/api/inventory");
-                    for (String skuCode : skuCodes) {
-                        builder.queryParam("skuCode", skuCode);
-                    }
 
-                    return builder.build();
-                })
+
+        InventoryResponse[] inventoryResponses = webClient.get()
+                .uri("http://localhost:8082/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
+                )
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
                 .block();
