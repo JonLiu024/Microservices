@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     public final OrderRepository orderRepository;
-    public final WebClient webClient;
+    public final WebClient.Builder webClientBuilder;
 
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -43,8 +43,8 @@ public class OrderService {
         //-> localhost:8082/api/inventory?skuCode={skuCode1}.. and localhost:8082/api/inventory?skuCode={skuCode}....
 
 
-        InventoryResponse[] inventoryResponses = webClient.get()
-                .uri("http://localhost:8082/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
+        InventoryResponse[] inventoryResponses = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
                 )
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
