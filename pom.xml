@@ -27,6 +27,7 @@
         <module>order-services</module>
         <module>inventory-services</module>
         <module>discovery-service</module>
+        <module>api-gateway</module>
     </modules>
 
     <name>Archetype - microservices</name>
