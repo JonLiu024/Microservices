@@ -25,13 +25,14 @@ public class ProductService {
                 description(productRequest.getDescription()).
                 price(productRequest.getPrice()).build();
         productRepository.save(product);
-        log.info("The product of {} is saved to product repository sucessfully ", product);
+        log.info("The product of {} is saved to product repository successfully ", product);
 
     }
 
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(this::mapProductToResponse).toList();
+
     }
 
     public ProductResponse mapProductToResponse(Product product) {
@@ -43,4 +44,15 @@ public class ProductService {
     }
 
 
+    public void deleteAProduct(List<String> products) {
+        try {
+            for (String id: products) {
+                productRepository.deleteById(id);
+                log.info("The product of {} is deleted successfully ", id);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+    }
 }

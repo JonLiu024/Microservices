@@ -29,9 +29,10 @@ public class ProductController {
     }
 
 
-    @DeleteMapping("/api/product/:id")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void deleteProduct() {
+    public void deleteProduct(@RequestParam(name = "id") List<String> products) {
+        productService.deleteAProduct(products);
 
     }
 

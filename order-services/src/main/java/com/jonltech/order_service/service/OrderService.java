@@ -3,6 +3,7 @@ package com.jonltech.order_service.service;
 import com.jonltech.order_service.dto.InventoryResponse;
 import com.jonltech.order_service.dto.OrderLineItemsDto;
 import com.jonltech.order_service.dto.OrderRequest;
+import com.jonltech.order_service.dto.OrderResponse;
 import com.jonltech.order_service.model.Order;
 import com.jonltech.order_service.model.OrderLineItems;
 import com.jonltech.order_service.repository.OrderRepository;
@@ -31,7 +32,7 @@ public class OrderService {
         order.setOrderNumber(UUID.randomUUID().toString());
 
         List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
-                .stream().map(this::mapDtoToPojo).collect(Collectors.toList());
+                .stream().map(this::mapOrderLineItemDtoToPojo).collect(Collectors.toList());
         order.setOrderLineItemsList(orderLineItemsList);
 
         List<String> skuCodes = order.getOrderLineItemsList().stream()
@@ -63,7 +64,7 @@ public class OrderService {
 
     }
 
-    public OrderLineItems mapDtoToPojo(OrderLineItemsDto orderLineItemsDto) {
+    public OrderLineItems mapOrderLineItemDtoToPojo(OrderLineItemsDto orderLineItemsDto) {
         OrderLineItems orderLineItems = new OrderLineItems();
         orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
         orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
@@ -73,5 +74,26 @@ public class OrderService {
     }
 
 
+    public List<OrderResponse> getAllOrders() {
+
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream().map(this::mapOrderToDto).toList();
+    }
+
+    public OrderResponse mapOrderToDto(Order order) {
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setOrderNumber(order.getOrderNumber());
+        List<OrderLineItemsDto> orderLineItemsDtoList = order.getOrderLineItemsList().stream().map(this::mapOrderLineItemPojoToDto).toList();
+        orderResponse.setOrderLineItemsDtoList(orderLineItemsDtoList);
+        return orderResponse;
+    }
+
+    public OrderLineItemsDto mapOrderLineItemPojoToDto(OrderLineItems orderLineItems) {
+        OrderLineItemsDto orderLineItemsDto = new OrderLineItemsDto();
+        orderLineItemsDto.setPrice(orderLineItems.getPrice());
+        orderLineItemsDto.setQuantity(orderLineItems.getQuantity());
+        orderLineItemsDto.setSkuCode(orderLineItems.getSkuCode());
+        return orderLineItemsDto;
+    }
 
 }
