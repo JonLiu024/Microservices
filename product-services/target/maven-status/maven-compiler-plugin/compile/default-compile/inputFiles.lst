@@ -1,7 +1,0 @@
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/ProductServicesApplication.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/controller/ProductController.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/dto/ProductRequest.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/dto/ProductResponse.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/model/Product.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/repository/ProductRepository.java
-/Users/liudjem/Desktop/microservices/product-services/src/main/java/com/jonltech/product_services/service/ProductService.java

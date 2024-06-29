@@ -1,7 +1,0 @@
-com/jonltech/inventory_service/dto/InventoryResponse$InventoryResponseBuilder.class
-com/jonltech/inventory_service/dto/InventoryResponse.class
-com/jonltech/inventory_service/model/Inventory.class
-com/jonltech/inventory_service/repository/InventoryRepository.class
-com/jonltech/inventory_service/controller/InventoryController.class
-com/jonltech/inventory_service/InventoryServiceApplication.class
-com/jonltech/inventory_service/service/InventoryService.class
