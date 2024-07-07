@@ -9,6 +9,13 @@
     <artifactId>order-services</artifactId>
     <name>Archetype - order-services</name>
     <url>http://maven.apache.org</url>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

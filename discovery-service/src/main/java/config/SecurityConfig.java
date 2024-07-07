@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .csrf().disable().authorizeHttpRequests(authz -> authz
                         .anyRequest().authenticated()
-                );
+                ).httpBasic();
         return http.build();
     }
 
