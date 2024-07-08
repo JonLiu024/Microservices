@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
+
 public class InventoryController {
 
     private final InventoryService inventoryService;
@@ -19,14 +20,14 @@ public class InventoryController {
     //http://localhost:8082/api/inventory?skuCode=?&skuCode=?
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam(name = "skuCode") List<String> skuCodes) {
+    public List<InventoryResponse> isInStock(@RequestParam(name = "skuCode") List<String> skuCodes) throws InterruptedException {
 
         return inventoryService.isInStock(skuCodes);
     }
 
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public void updateInventory(List<UpdateInventoryRequest> updateInventoryRequests) {
+    public void updateInventory(@RequestBody List<UpdateInventoryRequest> updateInventoryRequests) {
         inventoryService.updateInventory(updateInventoryRequests);
     }
 

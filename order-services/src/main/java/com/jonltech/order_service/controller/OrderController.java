@@ -4,11 +4,14 @@ import com.jonltech.order_service.dto.OrderRequest;
 import com.jonltech.order_service.dto.OrderResponse;
 import com.jonltech.order_service.service.OrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +23,11 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    public String placeOrder(@RequestBody OrderRequest orderRequest) {
-        orderService.placeOrder(orderRequest);
-        return "order created successfully";
+    @TimeLimiter(name = "inventory")
+    @Retry(name = "inventory")
+    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
+
+        return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest)) ;
     }
 
 
@@ -33,8 +38,8 @@ public class OrderController {
     }
 
     //fallback logic when the circuit breaker goes to open state
-    public String fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
-        return "Oops, the order cannot be placed at the moment, please try again later!";
+    public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> "Oops, the order cannot be placed at the moment, please try again later!");
     }
 
 }

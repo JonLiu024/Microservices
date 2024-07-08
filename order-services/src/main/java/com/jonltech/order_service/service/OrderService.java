@@ -25,7 +25,7 @@ public class OrderService {
     public final OrderRepository orderRepository;
     public final WebClient.Builder webClientBuilder;
 
-    public void placeOrder(OrderRequest orderRequest) {
+    public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
 
@@ -68,12 +68,14 @@ public class OrderService {
                         .retrieve()
                         .bodyToMono(void.class)
                         .block();
-                System.out.println("Inventory is successfully updated after placing the order");
+                System.out.println("Inventory updated");
+                return "placing order successfully";
 
             } catch (Exception e) {
                 System.out.println("Inventory update is not successful");
                 orderRepository.delete(order);
                 System.out.println("order is deleted from the repository");
+                return "place order failed";
             }
 
 
