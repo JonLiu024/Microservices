@@ -64,6 +64,7 @@ public class OrderService {
 
             try {
                 webClientBuilder.build().post().uri("localhost:8081/api/inventory/update")
+                        .bodyValue(updateInventoryRequestList)
                         .retrieve()
                         .bodyToMono(void.class)
                         .block();
