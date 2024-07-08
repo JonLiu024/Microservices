@@ -1,9 +1,6 @@
 package com.jonltech.order_service.service;
 
-import com.jonltech.order_service.dto.InventoryResponse;
-import com.jonltech.order_service.dto.OrderLineItemsDto;
-import com.jonltech.order_service.dto.OrderRequest;
-import com.jonltech.order_service.dto.OrderResponse;
+import com.jonltech.order_service.dto.*;
 import com.jonltech.order_service.model.Order;
 import com.jonltech.order_service.model.OrderLineItems;
 import com.jonltech.order_service.repository.OrderRepository;
@@ -16,7 +13,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Data
 @RequiredArgsConstructor
@@ -32,11 +30,11 @@ public class OrderService {
         order.setOrderNumber(UUID.randomUUID().toString());
 
         List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
-                .stream().map(this::mapOrderLineItemDtoToPojo).collect(Collectors.toList());
+                .stream().map(this::mapOrderLineItemDtoToPojo).collect(toList());
         order.setOrderLineItemsList(orderLineItemsList);
 
         List<String> skuCodes = order.getOrderLineItemsList().stream()
-                .map(OrderLineItems::getSkuCode).collect(Collectors.toList());
+                .map(OrderLineItems::getSkuCode).collect(toList());
 
 
         //make request to the inventory service to check if orderlineitems are in stock
@@ -45,11 +43,12 @@ public class OrderService {
 
 
         InventoryResponse[] inventoryResponses = webClientBuilder.build().get()
-                .uri("http://inventory-service/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
+                .uri("http://localhost:8081/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
                 )
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
                 .block();
+
 
         System.out.println("Inventory check responses: " + Arrays.toString(inventoryResponses));
 
@@ -57,6 +56,26 @@ public class OrderService {
 
         if (allProductsInstock) {
             orderRepository.save(order);
+            List<UpdateInventoryRequest> updateInventoryRequestList =
+                    orderLineItemsList.stream().map(orderLineItems -> new UpdateInventoryRequest(
+                    orderLineItems.getSkuCode(),
+                    orderLineItems.getQuantity())
+            ).toList();
+
+            try {
+                webClientBuilder.build().post().uri("localhost:8081/api/inventory/update")
+                        .retrieve()
+                        .bodyToMono(void.class)
+                        .block();
+                System.out.println("Inventory is successfully updated after placing the order");
+
+            } catch (Exception e) {
+                System.out.println("Inventory update is not successful");
+                orderRepository.delete(order);
+                System.out.println("order is deleted from the repository");
+            }
+
+
         } else {
             throw new IllegalArgumentException("The product ordered is not in stock");
         }

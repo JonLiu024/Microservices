@@ -1,6 +1,7 @@
 package com.jonltech.inventory_service.controller;
 
 import com.jonltech.inventory_service.dto.InventoryResponse;
+import com.jonltech.inventory_service.dto.UpdateInventoryRequest;
 import com.jonltech.inventory_service.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,12 @@ public class InventoryController {
     public List<InventoryResponse> isInStock(@RequestParam(name = "skuCode") List<String> skuCodes) {
 
         return inventoryService.isInStock(skuCodes);
+    }
+
+    @PostMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateInventory(List<UpdateInventoryRequest> updateInventoryRequests) {
+        inventoryService.updateInventory(updateInventoryRequests);
     }
 
 }

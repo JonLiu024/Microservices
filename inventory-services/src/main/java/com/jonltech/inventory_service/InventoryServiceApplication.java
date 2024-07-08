@@ -29,8 +29,15 @@ public class InventoryServiceApplication {
             iphone15Gold.setQuantity(0);
             iphone15Gold.setSkuCode("Iphone15_Gold");
 
+            Inventory iphone13Red = new Inventory();
+            iphone13Red.setQuantity(10);
+            iphone13Red.setSkuCode("iphone_13_red");
+
+
             inventoryRepository.save(iphone15Blue);
             inventoryRepository.save(iphone15Gold);
+            inventoryRepository.save(iphone13Red);
+
         };
     }
 }
