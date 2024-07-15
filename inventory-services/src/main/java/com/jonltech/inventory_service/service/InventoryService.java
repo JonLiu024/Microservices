@@ -19,21 +19,11 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
 
     @Transactional(readOnly = true)
-    public List<InventoryResponse> isInStock(List<String> skuCode) throws InterruptedException {
-        //for testing the time limiter properties in circuit breaker of order service
-        try {
-            log.info("wait started");
-            Thread.sleep(10000);
-            log.info("wait ended");
-        } catch (RuntimeException e) {
-            System.out.println(e.toString());
-        }
+    public List<InventoryResponse> getStockInfo(List<String> skuCode) throws InterruptedException {
         return inventoryRepository.findBySkuCodeIn(skuCode).stream()
-                .map(inventory ->
-                    InventoryResponse.builder()
-                            .skuCode(inventory.getSkuCode())
-                            .isInStock(inventory.getQuantity() > 0)
-                            .build()).toList();
+                .map(inventory -> InventoryResponse.builder()
+                        .skuCode(inventory.getSkuCode())
+                        .stock(inventory.getQuantity()).build()).toList();
     }
 
 

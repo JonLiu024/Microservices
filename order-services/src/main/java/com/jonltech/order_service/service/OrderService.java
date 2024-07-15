@@ -8,11 +8,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -33,8 +32,13 @@ public class OrderService {
                 .stream().map(this::mapOrderLineItemDtoToPojo).collect(toList());
         order.setOrderLineItemsList(orderLineItemsList);
 
-        List<String> skuCodes = order.getOrderLineItemsList().stream()
-                .map(OrderLineItems::getSkuCode).collect(toList());
+        Map<String, Integer> orderLineItemQuantities = new HashMap<>();
+        for (OrderLineItems orderLineItems: orderLineItemsList) {
+            orderLineItemQuantities.put(orderLineItems.getSkuCode(), orderLineItems.getQuantity());
+        }
+
+        List<String> skuCodes = orderLineItemsList.stream().map(
+                OrderLineItems::getSkuCode).toList();
 
 
         //make request to the inventory service to check if orderlineitems are in stock
@@ -52,9 +56,12 @@ public class OrderService {
 
         System.out.println("Inventory check responses: " + Arrays.toString(inventoryResponses));
 
-        boolean allProductsInstock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
+        assert inventoryResponses != null;
+        boolean hasEnoughProductsInstock = Arrays.stream(inventoryResponses).allMatch(inventoryResponse ->
+                inventoryResponse.getStock() >=
+                        orderLineItemQuantities.get(inventoryResponse.getSkuCode()));
 
-        if (allProductsInstock) {
+        if (hasEnoughProductsInstock) {
             orderRepository.save(order);
             List<UpdateInventoryRequest> updateInventoryRequestList =
                     orderLineItemsList.stream().map(orderLineItems -> new UpdateInventoryRequest(
@@ -64,7 +71,7 @@ public class OrderService {
 
             try {
                 webClientBuilder.build().post().uri("localhost:8081/api/inventory/update")
-                        .bodyValue(updateInventoryRequestList)
+                        .bodyValue(BodyInserters.fromValue(updateInventoryRequestList))
                         .retrieve()
                         .bodyToMono(void.class)
                         .block();

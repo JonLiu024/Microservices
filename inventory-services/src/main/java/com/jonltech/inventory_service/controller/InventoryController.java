@@ -22,7 +22,7 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.OK)
     public List<InventoryResponse> isInStock(@RequestParam(name = "skuCode") List<String> skuCodes) throws InterruptedException {
 
-        return inventoryService.isInStock(skuCodes);
+        return inventoryService.getStockInfo(skuCodes);
     }
 
     @PostMapping("/update")
