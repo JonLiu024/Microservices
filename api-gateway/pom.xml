@@ -36,5 +36,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing</artifactId>
         </dependency>
+
     </dependencies>
 </project>

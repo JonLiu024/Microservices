@@ -32,23 +32,24 @@ public class OrderService {
     public final Tracer tracer;
 
     public String placeOrder(OrderRequest orderRequest) {
+        Order order = new Order();
+        order.setOrderNumber(UUID.randomUUID().toString());
+
+        List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
+                .stream().map(this::mapOrderLineItemDtoToPojo).collect(toList());
+        order.setOrderLineItemsList(orderLineItemsList);
+
+        Map<String, Integer> orderLineItemQuantities = new HashMap<>();
+        for (OrderLineItems orderLineItems: orderLineItemsList) {
+            orderLineItemQuantities.put(orderLineItems.getSkuCode(), orderLineItems.getQuantity());
+        }
+
+        List<String> skuCodes = orderLineItemsList.stream().map(
+                OrderLineItems::getSkuCode).toList();
+
+
         Span newSpan = this.tracer.nextSpan().name("placeOrder");
         try (Tracer.SpanInScope ws = this.tracer.withSpan(newSpan.start())) {
-
-            Order order = new Order();
-            order.setOrderNumber(UUID.randomUUID().toString());
-
-            List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
-                    .stream().map(this::mapOrderLineItemDtoToPojo).collect(toList());
-            order.setOrderLineItemsList(orderLineItemsList);
-
-            Map<String, Integer> orderLineItemQuantities = new HashMap<>();
-            for (OrderLineItems orderLineItems: orderLineItemsList) {
-                orderLineItemQuantities.put(orderLineItems.getSkuCode(), orderLineItems.getQuantity());
-            }
-
-            List<String> skuCodes = orderLineItemsList.stream().map(
-                    OrderLineItems::getSkuCode).toList();
 
 
             //make request to the inventory service to check if orderlineitems are in stock
@@ -57,7 +58,7 @@ public class OrderService {
 
 
             InventoryResponse[] inventoryResponses = webClientBuilder.build().get()
-                    .uri("http://localhost:8081/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
+                    .uri("http:inventory-services/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
                     )
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)

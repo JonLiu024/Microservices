@@ -1,6 +1,7 @@
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/InventoryServiceApplication.java
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/controller/InventoryController.java
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/dto/InventoryResponse.java
+/Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/dto/UpdateInventoryRequest.java
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/model/Inventory.java
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/repository/InventoryRepository.java
 /Users/liudjem/Desktop/microservices/inventory-services/src/main/java/com/jonltech/inventory_service/service/InventoryService.java
