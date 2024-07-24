@@ -1,6 +1,7 @@
 package com.jonltech.order_service.service;
 
 import com.jonltech.order_service.dto.*;
+import com.jonltech.order_service.event.OrderPlacedEvent;
 import com.jonltech.order_service.model.Order;
 import com.jonltech.order_service.model.OrderLineItems;
 import com.jonltech.order_service.repository.OrderRepository;
@@ -10,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -27,9 +29,10 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class OrderService {
 
-    public final OrderRepository orderRepository;
-    public final WebClient.Builder webClientBuilder;
-    public final Tracer tracer;
+    private final OrderRepository orderRepository;
+    private final WebClient.Builder webClientBuilder;
+    private final Tracer tracer;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -74,6 +77,7 @@ public class OrderService {
 
             if (hasEnoughProductsInstock) {
                 orderRepository.save(order);
+                kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
                 List<UpdateInventoryRequest> updateInventoryRequestList =
                         orderLineItemsList.stream().map(orderLineItems -> new UpdateInventoryRequest(
                                 orderLineItems.getSkuCode(),
