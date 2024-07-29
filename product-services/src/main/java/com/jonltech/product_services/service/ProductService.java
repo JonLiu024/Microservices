@@ -2,11 +2,13 @@ package com.jonltech.product_services.service;
 
 import com.jonltech.product_services.dto.ProductRequest;
 import com.jonltech.product_services.dto.ProductResponse;
+import com.jonltech.product_services.event.ProductCreatedEvent;
 import com.jonltech.product_services.model.Product;
 import com.jonltech.product_services.repository.ProductRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate;
 
     public void createProduct(ProductRequest productRequest) {
         Product product = Product.builder().
@@ -25,7 +28,8 @@ public class ProductService {
                 description(productRequest.getDescription()).
                 price(productRequest.getPrice()).build();
         productRepository.save(product);
-        log.info("The product of {} is saved to product repository successfully ", product);
+        kafkaTemplate.send("notificationTopic", new ProductCreatedEvent(productRequest.getId()));
+
 
     }
 
@@ -48,7 +52,7 @@ public class ProductService {
         try {
             for (String id: products) {
                 productRepository.deleteById(id);
-                log.info("The product of {} is deleted successfully ", id);
+
             }
         } catch (Exception e) {
             e.getMessage();

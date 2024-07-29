@@ -28,7 +28,11 @@ public class InventoryController {
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     public void updateInventory(@RequestBody List<UpdateInventoryRequest> updateInventoryRequests) {
-        inventoryService.updateInventory(updateInventoryRequests);
+        inventoryService.updateInventoryForOrderPlaced(updateInventoryRequests);
+
     }
+
+
+
 
 }
