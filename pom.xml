@@ -23,9 +23,9 @@
 
 
     <modules>
-        <module>product-services</module>
-        <module>order-services</module>
-        <module>inventory-services</module>
+        <module>wildlife-info-services</module>
+        <module>donation-services</module>
+        <module>funding-services</module>
         <module>discovery-service</module>
         <module>api-gateway</module>
         <module>notification-services</module>
