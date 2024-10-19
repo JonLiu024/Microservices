@@ -23,12 +23,12 @@
 
 
     <modules>
-        <module>wildlife-info-services</module>
-        <module>donation-services</module>
-        <module>funding-services</module>
+        <module>wildlife-info-service</module>
+        <module>donation-service</module>
+        <module>funding-management-service</module>
         <module>discovery-service</module>
         <module>api-gateway</module>
-        <module>notification-services</module>
+        <module>notification-service</module>
     </modules>
 
     <name>Archetype - microservices</name>
