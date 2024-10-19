@@ -1,10 +1,10 @@
 package com.jonltech.order_service.service;
 
 import com.jonltech.order_service.dto.*;
-import com.jonltech.order_service.event.OrderPlacedEvent;
-import com.jonltech.order_service.model.Order;
-import com.jonltech.order_service.model.OrderLineItems;
-import com.jonltech.order_service.repository.OrderRepository;
+import com.jonltech.order_service.event.DonationCreatedEvent;
+import com.jonltech.order_service.model.Donation;
+import com.jonltech.order_service.model.DonationLineIterm;
+import com.jonltech.order_service.repository.DonationRepository;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import lombok.Builder;
@@ -27,28 +27,28 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Transactional
 @Slf4j
-public class OrderService {
+public class DonationService {
 
-    private final OrderRepository orderRepository;
+    private final DonationRepository donationRepository;
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
-    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, DonationCreatedEvent> kafkaTemplate;
 
-    public String placeOrder(OrderRequest orderRequest) {
-        Order order = new Order();
-        order.setOrderNumber(UUID.randomUUID().toString());
+    public String placeOrder(DonationRequest donationRequest) {
+        Donation donation = new Donation();
+        donation.setOrderNumber(UUID.randomUUID().toString());
 
-        List<OrderLineItems> orderLineItemsList = orderRequest.getOrderLineItemDtosList()
+        List<DonationLineIterm> orderLineItemsList = donationRequest.getOrderLineItemDtosList()
                 .stream().map(this::mapOrderLineItemDtoToPojo).collect(toList());
-        order.setOrderLineItemsList(orderLineItemsList);
+        donation.setOrderLineItemsList(orderLineItemsList);
 
         Map<String, Integer> orderLineItemQuantities = new HashMap<>();
-        for (OrderLineItems orderLineItems: orderLineItemsList) {
+        for (DonationLineIterm orderLineItems: orderLineItemsList) {
             orderLineItemQuantities.put(orderLineItems.getSkuCode(), orderLineItems.getQuantity());
         }
 
         List<String> skuCodes = orderLineItemsList.stream().map(
-                OrderLineItems::getSkuCode).toList();
+                DonationLineIterm::getSkuCode).toList();
 
 
         Span newSpan = this.tracer.nextSpan().name("placeOrder");
@@ -60,26 +60,26 @@ public class OrderService {
             //-> localhost:8082/api/inventory?skuCode={skuCode1}.. and localhost:8082/api/inventory?skuCode={skuCode}....
 
 
-            InventoryResponse[] inventoryResponses = webClientBuilder.build().get()
+            FundingServiceResponse[] fundingServiceRespons = webClientBuilder.build().get()
                     .uri("http:inventory-services/api/inventory", uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()
                     )
                     .retrieve()
-                    .bodyToMono(InventoryResponse[].class)
+                    .bodyToMono(FundingServiceResponse[].class)
                     .block();
 
 
-            System.out.println("Inventory check responses: " + Arrays.toString(inventoryResponses));
+            System.out.println("Inventory check responses: " + Arrays.toString(fundingServiceRespons));
 
-            assert inventoryResponses != null;
-            boolean hasEnoughProductsInstock = Arrays.stream(inventoryResponses).allMatch(inventoryResponse ->
-                    inventoryResponse.getStock() >=
-                            orderLineItemQuantities.get(inventoryResponse.getSkuCode()));
+            assert fundingServiceRespons != null;
+            boolean hasEnoughProductsInstock = Arrays.stream(fundingServiceRespons).allMatch(fundingServiceResponse ->
+                    fundingServiceResponse.getStock() >=
+                            orderLineItemQuantities.get(fundingServiceResponse.getSkuCode()));
 
             if (hasEnoughProductsInstock) {
-                orderRepository.save(order);
-                kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
-                List<UpdateInventoryRequest> updateInventoryRequestList =
-                        orderLineItemsList.stream().map(orderLineItems -> new UpdateInventoryRequest(
+                donationRepository.save(donation);
+                kafkaTemplate.send("notificationTopic", new DonationCreatedEvent(donation.getOrderNumber()));
+                List<UpdateFundingRequest> updateInventoryRequestList =
+                        orderLineItemsList.stream().map(orderLineItems -> new UpdateFundingRequest(
                                 orderLineItems.getSkuCode(),
                                 orderLineItems.getQuantity())
                         ).toList();
@@ -95,7 +95,7 @@ public class OrderService {
 
                 } catch (Exception e) {
                     System.out.println("Inventory update is not successful");
-                    orderRepository.delete(order);
+                    donationRepository.delete(donation);
                     System.out.println("order is deleted from the repository");
                     return "place order failed";
                 }
@@ -114,11 +114,11 @@ public class OrderService {
 
     }
 
-    public OrderLineItems mapOrderLineItemDtoToPojo(OrderLineItemsDto orderLineItemsDto) {
-        OrderLineItems orderLineItems = new OrderLineItems();
-        orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
-        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
-        orderLineItems.setPrice(orderLineItemsDto.getPrice());
+    public DonationLineIterm mapOrderLineItemDtoToPojo(DonationLineItemsDto donationLineItemsDto) {
+        DonationLineIterm orderLineItems = new DonationLineIterm();
+        orderLineItems.setQuantity(donationLineItemsDto.getQuantity());
+        orderLineItems.setSkuCode(donationLineItemsDto.getSkuCode());
+        orderLineItems.setPrice(donationLineItemsDto.getPrice());
         return orderLineItems;
 
     }
@@ -126,24 +126,24 @@ public class OrderService {
 
     public List<OrderResponse> getAllOrders() {
 
-        List<Order> orders = orderRepository.findAll();
-        return orders.stream().map(this::mapOrderToDto).toList();
+        List<Donation> donations = donationRepository.findAll();
+        return donations.stream().map(this::mapOrderToDto).toList();
     }
 
-    public OrderResponse mapOrderToDto(Order order) {
+    public OrderResponse mapOrderToDto(Donation donation) {
         OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setOrderNumber(order.getOrderNumber());
-        List<OrderLineItemsDto> orderLineItemsDtoList = order.getOrderLineItemsList().stream().map(this::mapOrderLineItemPojoToDto).toList();
-        orderResponse.setOrderLineItemsDtoList(orderLineItemsDtoList);
+        orderResponse.setOrderNumber(donation.getOrderNumber());
+        List<DonationLineItemsDto> donationLineItemsDtoList = donation.getOrderLineItemsList().stream().map(this::mapOrderLineItemPojoToDto).toList();
+        orderResponse.setDonationLineItemsDtoList(donationLineItemsDtoList);
         return orderResponse;
     }
 
-    public OrderLineItemsDto mapOrderLineItemPojoToDto(OrderLineItems orderLineItems) {
-        OrderLineItemsDto orderLineItemsDto = new OrderLineItemsDto();
-        orderLineItemsDto.setPrice(orderLineItems.getPrice());
-        orderLineItemsDto.setQuantity(orderLineItems.getQuantity());
-        orderLineItemsDto.setSkuCode(orderLineItems.getSkuCode());
-        return orderLineItemsDto;
+    public DonationLineItemsDto mapOrderLineItemPojoToDto(DonationLineIterm orderLineItems) {
+        DonationLineItemsDto donationLineItemsDto = new DonationLineItemsDto();
+        donationLineItemsDto.setPrice(orderLineItems.getPrice());
+        donationLineItemsDto.setQuantity(orderLineItems.getQuantity());
+        donationLineItemsDto.setSkuCode(orderLineItems.getSkuCode());
+        return donationLineItemsDto;
     }
 
 }

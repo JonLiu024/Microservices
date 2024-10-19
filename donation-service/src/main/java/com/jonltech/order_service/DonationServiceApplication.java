@@ -1,8 +1,8 @@
 package com.jonltech.order_service;
 
-import com.jonltech.order_service.model.Order;
-import com.jonltech.order_service.model.OrderLineItems;
-import com.jonltech.order_service.repository.OrderRepository;
+import com.jonltech.order_service.model.Donation;
+import com.jonltech.order_service.model.DonationLineIterm;
+import com.jonltech.order_service.repository.DonationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,27 +15,27 @@ import java.util.List;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class OrderServiceApplication {
+public class DonationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrderServiceApplication.class, args);
+		SpringApplication.run(DonationServiceApplication.class, args);
 	}
 
 
 	@Bean
-	public CommandLineRunner loadData(OrderRepository orderRepository) {
+	public CommandLineRunner loadData(DonationRepository donationRepository) {
 		//create an order with a single order line item for testing purpose
 		return args -> {
-			Order iphone13Order = new Order();
-			iphone13Order.setOrderNumber("13443");
-			List<OrderLineItems> orderLineItemsList = new ArrayList<>();
-			OrderLineItems orderLineItems = new OrderLineItems();
+			Donation iphone13Donation = new Donation();
+			iphone13Donation.setOrderNumber("13443");
+			List<DonationLineIterm> orderLineItemsList = new ArrayList<>();
+			DonationLineIterm orderLineItems = new DonationLineIterm();
 			orderLineItems.setPrice(new BigDecimal(23));
 			orderLineItems.setQuantity(3);
 			orderLineItems.setSkuCode("iphone_13_red");
 			orderLineItemsList.add(orderLineItems);
-			iphone13Order.setOrderLineItemsList(orderLineItemsList);
-			orderRepository.save(iphone13Order);
+			iphone13Donation.setOrderLineItemsList(orderLineItemsList);
+			donationRepository.save(iphone13Donation);
 		};
 	}
 }

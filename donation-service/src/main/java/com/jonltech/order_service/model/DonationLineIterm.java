@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Setter
 @Getter
-public class OrderLineItems {
+public class DonationLineIterm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

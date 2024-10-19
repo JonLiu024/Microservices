@@ -1,16 +1,15 @@
 package com.jonltech.order_service.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class OrderLineItemsDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UpdateFundingRequest {
     private String skuCode;
-    private Integer quantity;
-    private BigDecimal price;
+    private int quantity;
 }

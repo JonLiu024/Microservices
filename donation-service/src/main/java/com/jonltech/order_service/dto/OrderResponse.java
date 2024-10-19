@@ -13,6 +13,6 @@ import java.util.List;
 @Builder
 public class OrderResponse {
     private String orderNumber;
-    private List<OrderLineItemsDto> orderLineItemsDtoList;
+    private List<DonationLineItemsDto> donationLineItemsDtoList;
 
 }

@@ -1,9 +1,9 @@
 package com.jonltech.order_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jonltech.order_service.dto.OrderLineItemsDto;
-import com.jonltech.order_service.dto.OrderRequest;
-import com.jonltech.order_service.repository.OrderRepository;
+import com.jonltech.order_service.dto.DonationLineItemsDto;
+import com.jonltech.order_service.dto.DonationRequest;
+import com.jonltech.order_service.repository.DonationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ import java.util.List;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @AutoConfigureMockMvc
 @SpringBootTest
-class OrderServiceApplicationTests {
+class DonationServiceApplicationTests {
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private DonationRepository donationRepository;
     @Autowired
     private MockMvc mockMvc;
 
@@ -57,30 +57,30 @@ class OrderServiceApplicationTests {
     @Test
 	void shouldPlaceOrder() throws Exception {
 
-        OrderRequest orderRequest = getOrderRequest();
-        String jsonObj = objectMapper.writeValueAsString(orderRequest);
+        DonationRequest donationRequest = getOrderRequest();
+        String jsonObj = objectMapper.writeValueAsString(donationRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObj))
                 .andExpect(status().isCreated());
 
-        Assertions.assertEquals(1, orderRepository.findAll().size());
+        Assertions.assertEquals(1, donationRepository.findAll().size());
 	}
 
-    public OrderRequest getOrderRequest() {
-        OrderRequest orderRequest = new OrderRequest();
-        orderRequest.setOrderLineItemDtosList(getOrderLineItemsDtosList());
-        return orderRequest;
+    public DonationRequest getOrderRequest() {
+        DonationRequest donationRequest = new DonationRequest();
+        donationRequest.setOrderLineItemDtosList(getOrderLineItemsDtosList());
+        return donationRequest;
     }
 
-    public List<OrderLineItemsDto> getOrderLineItemsDtosList() {
-        OrderLineItemsDto orderLineItemsDto1 = new OrderLineItemsDto();
-        orderLineItemsDto1.setPrice(BigDecimal.valueOf(5000.00));
-        orderLineItemsDto1.setQuantity(3);
-        orderLineItemsDto1.setSkuCode("232980nois");
-        List<OrderLineItemsDto> list = new ArrayList<>();
-        list.add(orderLineItemsDto1);
+    public List<DonationLineItemsDto> getOrderLineItemsDtosList() {
+        DonationLineItemsDto donationLineItemsDto1 = new DonationLineItemsDto();
+        donationLineItemsDto1.setPrice(BigDecimal.valueOf(5000.00));
+        donationLineItemsDto1.setQuantity(3);
+        donationLineItemsDto1.setSkuCode("232980nois");
+        List<DonationLineItemsDto> list = new ArrayList<>();
+        list.add(donationLineItemsDto1);
         return list;
     }
 }

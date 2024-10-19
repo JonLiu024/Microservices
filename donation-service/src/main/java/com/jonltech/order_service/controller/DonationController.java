@@ -1,8 +1,8 @@
 package com.jonltech.order_service.controller;
 
-import com.jonltech.order_service.dto.OrderRequest;
+import com.jonltech.order_service.dto.DonationRequest;
 import com.jonltech.order_service.dto.OrderResponse;
-import com.jonltech.order_service.service.OrderService;
+import com.jonltech.order_service.service.DonationService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
@@ -15,30 +15,30 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/order")
-public class OrderController {
+@RequestMapping("/api/donate")
+public class DonationController {
 
-    private final OrderService orderService;
+    private final DonationService donationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     @TimeLimiter(name = "inventory")
     @Retry(name = "inventory")
-    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
+    public CompletableFuture<String> placeOrder(@RequestBody DonationRequest donationRequest) {
 
-        return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest)) ;
+        return CompletableFuture.supplyAsync(() -> donationService.placeOrder(donationRequest)) ;
     }
 
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<OrderResponse> getAllOrders() {
-        return orderService.getAllOrders();
+        return donationService.getAllOrders();
     }
 
     //fallback logic when the circuit breaker goes to open state
-    public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
+    public CompletableFuture<String> fallbackMethod(DonationRequest donationRequest, RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> "Oops, the order cannot be placed at the moment, please try again later!");
     }
 

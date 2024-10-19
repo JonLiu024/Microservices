@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class OrderPlacedEvent {
+public class DonationCreatedEvent {
     private String orderNumber;
 }
