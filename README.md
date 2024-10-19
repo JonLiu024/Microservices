@@ -38,6 +38,7 @@ Maintains a record of donation histories and calculates total contributions.
 
 
 
+
 `Payment Service`
 
 Integrates with payment providers (e.g., Stripe, PayPal) to process donation payments.
@@ -55,10 +56,12 @@ Registers and discovers microservices dynamically.
 Provides load balancing for service communication.
 
 `Resilience and Fault Tolerance (Resilience4j)`
+
 Implements circuit breaker patterns to handle service failures .
 Provides retry mechanisms for failed requests.
 
 `Event-Driven Architecture (Kafka)`
+
 Facilitates communication between microservices through message queues.
 Asynchronous processing for events such as donation confirmations.
 Monitoring (Prometheus and Grafana)
