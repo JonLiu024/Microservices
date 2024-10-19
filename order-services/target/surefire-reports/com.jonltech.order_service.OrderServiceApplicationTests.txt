@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.jonltech.order_service.OrderServiceApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 30.48 s -- in com.jonltech.order_service.OrderServiceApplicationTests
