@@ -1,15 +1,13 @@
-package com.jonltech.funding_management_service.dto;
+package com.jonltech.funding_management_service.event;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateInventoryRequest {
+public class FundingStatusUpdateEvent {
     private String skuCode;
-    private Integer quantity;
+
 }

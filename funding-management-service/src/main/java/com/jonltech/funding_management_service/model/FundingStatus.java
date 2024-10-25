@@ -3,6 +3,8 @@ package com.jonltech.funding_management_service.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "t_inventories")
@@ -10,10 +12,11 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Inventory {
+public class FundingStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String skuCode;
-    private Integer quantity;
+    private String wildlifeId;
+    private BigDecimal amountFunded;
+    private BigDecimal fundingGoal;
 }

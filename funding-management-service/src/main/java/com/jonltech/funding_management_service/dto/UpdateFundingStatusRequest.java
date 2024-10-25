@@ -1,6 +1,5 @@
 package com.jonltech.funding_management_service.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +11,8 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FundingStatusResponse {
-    @JsonAlias({"wildlifeId", "wildlife_id"})
+public class UpdateFundingStatusRequest {
     private String wildlifeId;
     private BigDecimal amountFunded;
-    private BigDecimal fundingGoal;
+
 }
