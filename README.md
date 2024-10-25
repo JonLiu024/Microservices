@@ -4,6 +4,12 @@ This project is a microservice-based application developed using Spring Boot and
 The system supports various features, including creating wildlife profiles, managing donor profiles, processing donations, and integrating with other essential microservices. 
 The architecture includes service discovery, API gateway, security, resilience, event-driven communication, and monitoring.
 
+***System Design Architecture***
+
+<img width="934" alt="Screenshot 2024-10-25 at 6 23 27 AM" src="https://github.com/user-attachments/assets/d39c835f-a43e-4328-8732-0ab896eb5a02">
+
+
+
 ***Features Overview***
 
 - Wildlife Profile Management: Create and maintain wildlife profiles with information such as species, endangered status, and description.
