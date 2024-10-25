@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@Document(value = "product")
+@Document(value = "wildlifeProfile")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

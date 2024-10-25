@@ -76,8 +76,7 @@ class DonationServiceApplicationTests {
 
     public List<DonationLineItemsDto> getOrderLineItemsDtosList() {
         DonationLineItemsDto donationLineItemsDto1 = new DonationLineItemsDto();
-        donationLineItemsDto1.setPrice(BigDecimal.valueOf(5000.00));
-        donationLineItemsDto1.setQuantity(3);
+        donationLineItemsDto1.setAmount(BigDecimal.valueOf(5000.00));
         donationLineItemsDto1.setWildlifeId("232980nois");
         List<DonationLineItemsDto> list = new ArrayList<>();
         list.add(donationLineItemsDto1);
