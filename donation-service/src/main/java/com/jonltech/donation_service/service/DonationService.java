@@ -1,5 +1,6 @@
 package com.jonltech.donation_service.service;
 
+import com.jonltech.donation_service.DonationServiceApplication;
 import com.jonltech.donation_service.dto.*;
 import com.jonltech.donation_service.event.DonationCreatedEvent;
 import com.jonltech.donation_service.model.Donation;
@@ -34,6 +35,7 @@ public class DonationService {
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
     private final KafkaTemplate<String, DonationCreatedEvent> kafkaTemplate;
+    private final DonationServiceApplication donationServiceApplication;
 
     public String placeOrder(DonationRequest donationRequest) {
         Donation donation = new Donation();
@@ -128,18 +130,18 @@ public class DonationService {
     }
 
 
-    public List<OrderResponse> getAllOrders() {
+    public List<DonationResponse> getAllDonations() {
 
         List<Donation> donations = donationRepository.findAll();
         return donations.stream().map(this::mapDonationToDto).toList();
     }
 
-    public OrderResponse mapDonationToDto(Donation donation) {
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setOrderNumber(donation.getOrderNumber());
-        List<DonationLineItemsDto> donationLineItemsDtoList = donation.getOrderLineItemsList().stream().map(this::mapDonationLineItemPojoToDto).toList();
-        orderResponse.setFundingStatusResponseList(donationLineItemsDtoList);
-        return orderResponse;
+    public DonationResponse mapDonationToDto(Donation donation) {
+        DonationResponse donationResponse = new DonationResponse();
+        donationResponse.setOrderNumber(donation.getOrderNumber());
+        List<DonationLineItemsDto> donationLineItemsDtos = donation.getOrderLineItemsList().stream().map(this::mapDonationLineItemPojoToDto).toList();
+        donationResponse.setDonationLineItemsDtos(donationLineItemsDtos);
+        return donationResponse;
     }
 
     public DonationLineItemsDto mapDonationLineItemPojoToDto(DonationLineItem orderLineItems) {
@@ -149,4 +151,10 @@ public class DonationService {
         return donationLineItemsDto;
     }
 
+    public String deleteOrderById(Long id) {
+        Donation donation = donationRepository.findById(id).orElse(null);
+        donationRepository.delete(donation);
+        return "donation order deleted successfully.";
+
+    }
 }

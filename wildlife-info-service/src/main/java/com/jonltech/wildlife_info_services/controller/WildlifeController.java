@@ -18,13 +18,13 @@ public class WildlifeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody WildlifeRequest wildlifeRequest) {
+    public void createWl(@RequestBody WildlifeRequest wildlifeRequest) {
         wildlifeService.createProduct(wildlifeRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<WildlifeResponse> getAllProducts() {
+    public List<WildlifeResponse> getAllWl() {
         return wildlifeService.getAllWildlifeProfiles();
     }
 

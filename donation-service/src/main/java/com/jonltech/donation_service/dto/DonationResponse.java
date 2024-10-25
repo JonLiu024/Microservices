@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderResponse {
+public class DonationResponse {
     private String orderNumber;
-    private List<FundingStatusResponse> fundingStatusResponseList;
+    private List<DonationLineItemsDto> donationLineItemsDtos;
 
 }
