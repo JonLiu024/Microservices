@@ -5,8 +5,8 @@ The system supports various features, including creating wildlife profiles, mana
 The architecture includes service discovery, API gateway, security, resilience, event-driven communication, and monitoring.
 
 ***System Design Architecture***
+<img width="930" alt="Screenshot 2024-10-27 at 2 02 03 AM" src="https://github.com/user-attachments/assets/6c0df008-254d-40ad-af31-a61d5a04ad18">
 
-<img width="934" alt="Screenshot 2024-10-25 at 6 23 27 AM" src="https://github.com/user-attachments/assets/d39c835f-a43e-4328-8732-0ab896eb5a02">
 
 
 
