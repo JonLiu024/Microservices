@@ -42,13 +42,8 @@ Maintains a record of donation histories and calculates total contributions.
 
 `Notification Service`
 
-
-
-
-`Payment Service`
-
-Integrates with payment providers (e.g., Stripe, PayPal) to process donation payments.
-Manages payment transactions, confirmations, and failures.
+Consumes the events messages from the Donation services in the system and triggers email notification mechanisms 
+Utilized Kafka RabbitMQ to cache the request from when the request handling capacity of donation service exceeds that of Funding status management service
 
 `API Gateway (Spring Cloud Gateway)`
 
